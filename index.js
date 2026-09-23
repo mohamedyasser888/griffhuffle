@@ -2,27 +2,25 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
-const users = [
-  { id: 1, username: 'user1', password: 'pass1' },
-  { id: 2, username: 'user2', password: 'pass2' }
-];
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
-app.use(express.json());
-
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(user => user.username === username);
-  if (!user) {
-    res.status(401).send('Invalid username or password');
-    return;
-  }
-  if (user.password === password) {
-    res.status(200).send('Login successful');
-  } else {
-    res.status(401).send('Invalid username or password');
-  }
+// Default route - serves index.html
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
+// Serve CSS files from the public/css directory
+app.get('/css/:file', (req, res) => {
+  res.sendFile(__dirname + '/public/css/' + req.params.file);
+});
+
+// Serve JS files from the public/js directory
+app.get('/js/:file', (req, res) => {
+  res.sendFile(__dirname + '/public/js/' + req.params.file);
+});
+
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
