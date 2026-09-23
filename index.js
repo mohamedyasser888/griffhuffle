@@ -1,36 +1,28 @@
-const password = process.env.DB_PASSWORD;
+const express = require('express');
+const app = express();
+const PORT = 3000;
 
-import fs from 'fs';
+const users = [
+  { id: 1, username: 'user1', password: 'pass1' },
+  { id: 2, username: 'user2', password: 'pass2' }
+];
 
-const db = {
-  query: (sql, params) => {
-    // Simulate a query
-    return new Promise((resolve, reject) => {
-      const result = { rows: [{ id: 1, username: 'user1' }] };
-      resolve(result);
-    });
+app.use(express.json());
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = users.find(user => user.username === username);
+  if (!user) {
+    res.status(401).send('Invalid username or password');
+    return;
   }
-};
-
-const userId = 1;
-
-const user = db.query('SELECT * FROM users WHERE id = ?', [userId]);
-
-try {
-  // Your code here
-  process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at:', p, 'reason:', reason);
-  });
-} catch (error) {
-  console.error('Caught an error:', error);
-}
-
-fs.readFile('file.txt', (err, data) => {
-  if (err) {
-    console.error('Error reading file:', err);
+  if (user.password === password) {
+    res.status(200).send('Login successful');
   } else {
-    console.log('File data:', data);
+    res.status(401).send('Invalid username or password');
   }
 });
 
-const password = process.env.DB_PASSWORD;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
